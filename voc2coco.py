@@ -45,9 +45,11 @@ def get_image_info(img, annotation_root, extract_num_from_imgid=True):
         # filename = os.path.basename(path)
     img_name = os.path.basename(img) #(filename)
     img_id = os.path.splitext(img_name)[0]
-    if extract_num_from_imgid and isinstance(img_id, str):
-        img_id = int(re.findall(r'\d+', img_id)[0])
+    img_id = img_id.replace("-", "9") #replace "-" with a number, because it's creating bugs in changing filenames to ids
 
+    # if extract_num_from_imgid and isinstance(img_id, str):
+        # img_id = int(re.findall(r'\d+', img_id)[0])
+    print("img: ", img_name, "id: ", img_id)
     size = annotation_root.find('size')
     width = int(size.findtext('width'))
     height = int(size.findtext('height'))
@@ -110,9 +112,9 @@ def convert_xmls_to_cocojson(annotation_paths: List[str],
     ctr = 0
     for a_path in tqdm(annotation_paths):
         # Read annotation xml
-        if(ctr>=4000): #0:4000 for train subset ; 
-            break
-        ctr += 1
+        # if(ctr>=4000): #0:4000 for train subset ; 
+            # break
+        # ctr += 1
         # if(ctr <= 4000): #4001 till end for test subset
             # continue
         
