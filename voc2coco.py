@@ -43,10 +43,18 @@ def get_image_info(img, annotation_root, extract_num_from_imgid=True):
         # filename = annotation_root.findtext('filename')
     # else:
         # filename = os.path.basename(path)
-    img_name = os.path.basename(img) #(filename)
+    img_name = img
+
     img_id = os.path.splitext(img_name)[0]
+
+    # print([img_name, img_id])
+
+    
     if extract_num_from_imgid and isinstance(img_id, str):
-        img_id = int(re.findall(r'\d+', img_id)[0])
+        img_id = int(''.join(img_id.split('-')))
+
+    # print(img_id)
+    # asd
 
     size = annotation_root.find('size')
     width = int(size.findtext('width'))
@@ -108,18 +116,19 @@ def convert_xmls_to_cocojson(annotation_paths: List[str],
     print('Start converting !')
     # print(annotation_paths)
     ctr = 0
+    print('len(annotation_paths)', len(annotation_paths))
     for a_path in tqdm(annotation_paths):
         # Read annotation xml
-        if(ctr>=4000): #0:4000 for train subset ; 
-            break
-        ctr += 1
-        # if(ctr <= 4000): #4001 till end for test subset
-            # continue
+
         
         ann_tree = ET.parse(a_path)
         ann_root = ann_tree.getroot()
-        # print(a_path.split('.')[0])
-        img = (a_path.split('.')[0].split('\\')[1] + '.png')
+        
+
+        img = os.path.basename(a_path)
+        img = img[:-len('.xml')]+'.png'
+         
+        # asd
         img_info = get_image_info(img, annotation_root=ann_root,
                                   extract_num_from_imgid=extract_num_from_imgid)
         img_id = img_info['id']
@@ -154,7 +163,12 @@ def main():
     parser.add_argument('--output', type=str, default='output.json', help='path to output json file')
     parser.add_argument('--ext', type=str, default='', help='additional extension of annotation file')
     args = parser.parse_args()
+
     label2id = get_label2id(labels_path=args.labels)
+
+    print(label2id)
+    
+
     ann_paths = get_annpaths(
         ann_dir_path=args.ann_dir,
         ann_ids_path=args.ann_ids,
